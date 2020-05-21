@@ -34,7 +34,6 @@ public class KitCommand extends BaseCommand {
     @Syntax("[kit name]")
     @Description("Lists available kits")
     public void baseCommand(Player player, @Optional Kit kit) {
-        System.out.println("SYSOUT DEBUGGING HAHA");
         if (kit != null) {
             if (cooldownManager.isOnCooldown(player.getUniqueId(), "kit-" + kit.getName())) {
                 player.sendMessage(ChatColor.RED + "That kit is on cooldown!"); // TODO: say how long it's on cd for
@@ -65,7 +64,7 @@ public class KitCommand extends BaseCommand {
             }
 
             builder = builder.append(TextComponent.of(entry.getName()).color(TextColor.GOLD)
-                    .clickEvent(ClickEvent.runCommand("/kit " + entry.getName()))
+                    .clickEvent(ClickEvent.runCommand("/kits:kit " + entry.getName()))
                     .hoverEvent(HoverEvent.showText(TextComponent.of("Click to use kit " + entry.getName()))));
 
             if (kitIterator.hasNext()) {

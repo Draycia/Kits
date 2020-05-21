@@ -6,17 +6,17 @@ import net.draycia.kits.commands.KitPreviewCommand;
 import net.draycia.kits.listeners.PlayerJoinListener;
 import org.black_ixx.bossshop.BossShop;
 import org.black_ixx.bossshop.api.BossShopAPI;
+import org.black_ixx.bossshop.api.BossShopAddon;
 import org.black_ixx.bossshop.core.BSBuy;
 import org.black_ixx.bossshop.core.BSShop;
 import org.black_ixx.bossshop.core.prices.BSPriceType;
 import org.black_ixx.bossshop.core.rewards.BSRewardType;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,37 +24,46 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public final class Kits extends JavaPlugin {
+public final class Kits extends BossShopAddon {
 
     private File kitFolder = new File(getDataFolder(), "kits");
     private HashMap<String, Kit> kits = new HashMap<>();
 
     private ArrayList<BSShop> shops = new ArrayList<>();
-    private BossShopAPI bossShopAPI;
-    private BSShop mainShop;
+    private BSShop mainShop = null;
+
+    public BossShopAPI getBossShopAPI() {
+        return getBossShop().getAPI();
+    }
 
     @Override
-    public void onEnable() {
-        bossShopAPI = ((BossShop) Bukkit.getPluginManager().getPlugin("BossShopPro")).getAPI();
+    public String getAddonName() {
+        return "kits";
+    }
 
-        mainShop = new ShopGUI(bossShopAPI.createNextShopId());
-        mainShop.setShopName("kit-previews");
-        mainShop.setDisplayName("Kit Previews");
-        mainShop.setSignText("[Kit Previews]");
-        mainShop.setNeedPermToCreateSign(true);
+    @Override
+    public String getRequiredBossShopVersion() {
+        return "2.0.8";
+    }
 
+    @Override
+    public void enableAddon() {
         saveDefaultConfig();
-
-        loadKits();
 
         setupListeners();
         setupCommands();
     }
 
     @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public void bossShopFinishedLoading() {
+        loadKits();
     }
+
+    @Override
+    public void disableAddon() { }
+
+    @Override
+    public void bossShopReloaded(CommandSender commandSender) { }
 
     private void setupListeners() {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
@@ -83,7 +92,23 @@ public final class Kits extends JavaPlugin {
     }
 
     public void loadKits() {
-        shops.forEach(bossShopAPI.getShopHandler()::unloadShop);
+        if (mainShop != null) {
+            getBossShopAPI().getShopHandler().unloadShop(mainShop);
+        }
+
+        mainShop = new BSShop(getBossShopAPI().createNextShopId()) {
+            @Override
+            public void reloadShop() { }
+        };
+
+        mainShop.setShopName("kit-previews");
+        mainShop.setDisplayName("Kit Previews");
+        mainShop.setSignText("[Kit Previews]");
+        mainShop.setNeedPermToCreateSign(true);
+
+        getBossShopAPI().getShopHandler().addShop(mainShop);
+
+        shops.forEach(getBossShopAPI().getShopHandler()::unloadShop);
         shops.clear();
 
         kits.clear();
@@ -112,9 +137,13 @@ public final class Kits extends JavaPlugin {
 
                 long cooldown = 0;
 
-                int id = bossShopAPI.createNextShopId();
+                BSShop shop = new BSShop(getBossShopAPI().createNextShopId()) {
+                    @Override
+                    public void reloadShop() {
 
-                BSShop shop = new ShopGUI(id);
+                    }
+                };
+
                 shop.setShopName(kitName);
                 shop.setDisplayName("Kit " + kitName);
                 shop.setSignText("[" + kitName + "]");
@@ -139,12 +168,13 @@ public final class Kits extends JavaPlugin {
 
                     kitItems.add(new KitItem(slotPreference, itemStack));
 
-                    BSBuy bsBuy = bossShopAPI.createBSBuy(BSRewardType.Nothing, BSPriceType.Nothing, null,
+                    BSBuy bsBuy = getBossShopAPI().createBSBuy(BSRewardType.Nothing, BSPriceType.Nothing, null,
                             null, "", itemIndex++, "");
 
-                    bossShopAPI.addItemToShop(itemStack, bsBuy, shop);
-                    bossShopAPI.getShopHandler().addShop(shop);
+                    getBossShopAPI().addItemToShop(itemStack, bsBuy, shop);
                 }
+
+                getBossShopAPI().getShopHandler().addShop(shop);
 
                 getLogger().info("Loaded " + kitItems.size() + " items for kit " + kitName);
 
@@ -154,13 +184,12 @@ public final class Kits extends JavaPlugin {
 
                 kits.put(kitName, kit);
 
-                BSBuy shopBuy = bossShopAPI.createBSBuy(BSRewardType.Shop, BSPriceType.Nothing, shop.getShopName(), null,
+                BSBuy shopBuy = getBossShopAPI().createBSBuy(BSRewardType.Shop, BSPriceType.Nothing, shop.getShopName(), null,
                         "", shopIndex++, "kits.use." + kitName);
 
                 ItemStack shopItem = kitSection.getItemStack("shopitem");
 
-                bossShopAPI.addItemToShop(shopItem, shopBuy, mainShop);
-                bossShopAPI.getShopHandler().addShop(mainShop);
+                getBossShopAPI().addItemToShop(shopItem, shopBuy, mainShop);
 
             }
         }
@@ -177,9 +206,5 @@ public final class Kits extends JavaPlugin {
 
     public BSShop getMainShop() {
         return mainShop;
-    }
-
-    public BossShopAPI getBossShopAPI() {
-        return bossShopAPI;
     }
 }

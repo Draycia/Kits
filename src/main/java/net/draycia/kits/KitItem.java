@@ -4,12 +4,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class KitItem {
 
-    private int slot = -1;
+    private int slot;
     private ItemStack itemStack;
-
-    public KitItem(ItemStack itemStack) {
-        this.itemStack = itemStack;
-    }
 
     public KitItem(int slot, ItemStack itemStack) {
         this.slot = slot;
@@ -23,4 +19,5 @@ public class KitItem {
     public int getSlot() {
         return slot;
     }
+
 }
