@@ -1,4 +1,5 @@
 example-kit:
+  shopitem: STICK
   one:
     slot: 5 # Any value lower than 0 means it has no slot preference
     item:

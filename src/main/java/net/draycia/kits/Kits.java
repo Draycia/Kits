@@ -11,6 +11,7 @@ import org.black_ixx.bossshop.core.BSShop;
 import org.black_ixx.bossshop.core.prices.BSPriceType;
 import org.black_ixx.bossshop.core.rewards.BSRewardType;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,11 +28,20 @@ public final class Kits extends JavaPlugin {
 
     private File kitFolder = new File(getDataFolder(), "kits");
     private HashMap<String, Kit> kits = new HashMap<>();
-    private BossShopAPI bossShopAPI = null;
+
+    private ArrayList<BSShop> shops = new ArrayList<>();
+    private BossShopAPI bossShopAPI;
+    private BSShop mainShop;
 
     @Override
     public void onEnable() {
         bossShopAPI = ((BossShop) Bukkit.getPluginManager().getPlugin("BossShopPro")).getAPI();
+
+        mainShop = new ShopGUI(bossShopAPI.createNextShopId());
+        mainShop.setShopName("kit-previews");
+        mainShop.setDisplayName("Kit Previews");
+        mainShop.setSignText("[Kit Previews]");
+        mainShop.setNeedPermToCreateSign(true);
 
         saveDefaultConfig();
 
@@ -69,16 +79,21 @@ public final class Kits extends JavaPlugin {
         });
 
         manager.registerCommand(new KitCommand(this));
-        manager.registerCommand(new KitPreviewCommand(bossShopAPI));
+        manager.registerCommand(new KitPreviewCommand(this));
     }
 
     public void loadKits() {
+        shops.forEach(bossShopAPI.getShopHandler()::unloadShop);
+        shops.clear();
+
         kits.clear();
 
         if (!kitFolder.exists()) {
             kitFolder.mkdirs();
             saveResource("kits/example.yml", false);
         }
+
+        int shopIndex = 0;
 
         for (File kitFile : kitFolder.listFiles()) {
             YamlConfiguration kitConfig = new YamlConfiguration();
@@ -105,11 +120,15 @@ public final class Kits extends JavaPlugin {
                 shop.setSignText("[" + kitName + "]");
                 shop.setNeedPermToCreateSign(true);
 
-                int index = 0;
+                int itemIndex = 0;
 
                 for (String itemKey : kitSection.getKeys(false)) {
                     if (itemKey.equalsIgnoreCase("cooldown")) {
                         cooldown = kitSection.getLong(itemKey);
+                        continue;
+                    }
+
+                    if (itemKey.equalsIgnoreCase("shopitem")) {
                         continue;
                     }
 
@@ -121,9 +140,10 @@ public final class Kits extends JavaPlugin {
                     kitItems.add(new KitItem(slotPreference, itemStack));
 
                     BSBuy bsBuy = bossShopAPI.createBSBuy(BSRewardType.Nothing, BSPriceType.Nothing, null,
-                            null, "", index++, "");
+                            null, "", itemIndex++, "");
 
                     bossShopAPI.addItemToShop(itemStack, bsBuy, shop);
+                    bossShopAPI.getShopHandler().addShop(shop);
                 }
 
                 getLogger().info("Loaded " + kitItems.size() + " items for kit " + kitName);
@@ -133,6 +153,15 @@ public final class Kits extends JavaPlugin {
                 kit.setShop(shop);
 
                 kits.put(kitName, kit);
+
+                BSBuy shopBuy = bossShopAPI.createBSBuy(BSRewardType.Shop, BSPriceType.Nothing, shop.getShopName(), null,
+                        "", shopIndex++, "kits.use." + kitName);
+
+                ItemStack shopItem = kitSection.getItemStack("shopitem");
+
+                bossShopAPI.addItemToShop(shopItem, shopBuy, mainShop);
+                bossShopAPI.getShopHandler().addShop(mainShop);
+
             }
         }
 
@@ -144,5 +173,13 @@ public final class Kits extends JavaPlugin {
 
     public Collection<Kit> getKits() {
         return kits.values();
+    }
+
+    public BSShop getMainShop() {
+        return mainShop;
+    }
+
+    public BossShopAPI getBossShopAPI() {
+        return bossShopAPI;
     }
 }
