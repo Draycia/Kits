@@ -1,0 +1,2 @@
+# Set to NONE if you do not wish to give any kits to players when they first join
+new-join-kit: example-kit

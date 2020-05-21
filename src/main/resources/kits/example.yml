@@ -1,0 +1,8 @@
+example-kit:
+  one:
+    slot: 5 # Any value lower than 0 means it has no slot preference
+    item:
+      ==: org.bukkit.inventory.ItemStack
+      v: 2230
+      type: STICK
+      amount: 1

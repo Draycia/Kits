@@ -1,0 +1,5 @@
+name: Kits
+version: ${project.version}
+main: net.draycia.kits.Kits
+api-version: 1.13
+depend: [BossShopPro]
