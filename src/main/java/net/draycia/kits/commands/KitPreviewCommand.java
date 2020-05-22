@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import net.draycia.kits.Kit;
 import net.draycia.kits.Kits;
-import org.black_ixx.bossshop.api.BossShopAPI;
 import org.bukkit.entity.Player;
 
 @CommandAlias("kitp|kitpreview")

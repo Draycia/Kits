@@ -44,7 +44,9 @@ public class KitCommand extends BaseCommand {
 
             if (kit.getCooldown() > 0) {
                 cooldownManager.setUserCooldown(player.getUniqueId(), "kit-" + kit.getName(),
-                        TimeUnit.SECONDS, kit.getCooldown());
+                        TimeUnit.SECONDS, kit.getCooldown(), (uuid, id) -> {
+                            player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " is no longer on cooldown!");
+                        });
             }
 
             return;
