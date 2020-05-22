@@ -29,7 +29,8 @@ public class PlayerJoinListener implements Listener {
         Kit kit = noobaniaKits.getKit(kitName);
 
         if (kit == null) {
-            return; // TODO: log error?
+            noobaniaKits.getLogger().warning("New join kit specified but not found! Config error?");
+            return;
         }
 
         kit.giveToPlayer(event.getPlayer(), false);
