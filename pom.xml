@@ -112,7 +112,7 @@
         <dependency>
             <groupId>net.draycia</groupId>
             <artifactId>Cooldowns</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -49,6 +49,8 @@ public class KitCommand extends BaseCommand {
                         });
             }
 
+            player.sendMessage(ChatColor.GREEN + "Used kit " + kit.getName() + ".");
+
             return;
         }
 
