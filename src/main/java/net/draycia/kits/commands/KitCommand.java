@@ -11,7 +11,6 @@ import net.kyori.text.event.ClickEvent;
 import net.kyori.text.event.HoverEvent;
 import net.kyori.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -84,7 +83,7 @@ public class KitCommand extends BaseCommand {
     public void reload(CommandSender sender) {
         noobaniaKits.reloadConfig();
         noobaniaKits.loadKits();
-        sender.sendMessage(noobaniaKits.getLangEntry("reloaded"));
+        TextAdapter.sendComponent(sender, noobaniaKits.getMessage("reloaded"));
     }
 
 }
