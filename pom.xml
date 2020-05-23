@@ -79,6 +79,10 @@
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
         </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -120,6 +124,12 @@
             <artifactId>BossShopPro</artifactId>
             <version>2.0.8</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.minidigger</groupId>
+            <artifactId>MiniMessage-text</artifactId>
+            <version>2.0.4</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -1,15 +1,18 @@
 package net.draycia.kits;
 
 import co.aikar.commands.PaperCommandManager;
+import me.minidigger.minimessage.text.MiniMessageParser;
 import net.draycia.kits.commands.KitCommand;
 import net.draycia.kits.commands.KitPreviewCommand;
 import net.draycia.kits.listeners.PlayerJoinListener;
+import net.kyori.text.Component;
 import org.black_ixx.bossshop.api.BossShopAPI;
 import org.black_ixx.bossshop.api.BossShopAddon;
 import org.black_ixx.bossshop.core.BSBuy;
 import org.black_ixx.bossshop.core.BSShop;
 import org.black_ixx.bossshop.core.prices.BSPriceType;
 import org.black_ixx.bossshop.core.rewards.BSRewardType;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -30,6 +33,8 @@ public final class Kits extends BossShopAddon {
     private ArrayList<BSShop> shops = new ArrayList<>();
     private BSShop mainShop = null;
 
+    private YamlConfiguration language;
+
     public BossShopAPI getBossShopAPI() {
         return getBossShop().getAPI();
     }
@@ -47,6 +52,15 @@ public final class Kits extends BossShopAddon {
     @Override
     public void enableAddon() {
         saveDefaultConfig();
+        saveResource("language.yml", false);
+
+        language = new YamlConfiguration();
+
+        try {
+            language.load(new File(getDataFolder(), "language.yml"));
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
 
         setupListeners();
         setupCommands();
@@ -204,5 +218,17 @@ public final class Kits extends BossShopAddon {
 
     public BSShop getMainShop() {
         return mainShop;
+    }
+
+    public String getLangEntry(String key) {
+        return ChatColor.translateAlternateColorCodes('&', language.getString(key, ""));
+    }
+
+    public Component getMessage(String key) {
+        return MiniMessageParser.parseFormat(language.getString(key, ""));
+    }
+
+    public Component getMessage(String key, String... replace) {
+        return MiniMessageParser.parseFormat(language.getString(key, ""), replace);
     }
 }

@@ -1,0 +1,8 @@
+# Also supports MiniMessage!
+# https://github.com/MiniDigger/MiniMessage#examples
+cooldown: "&cThe kit %kitname% is on cooldown!"
+cooldown-end: "&aKit %kitname% is no longer on cooldown!"
+used-kit: "&aUsed kit %kitname%."
+click-to-use: "Click to use kit %kitname%"
+reloaded: "&aReloaded config and kits!"
+kits: "Kits: "

@@ -36,7 +36,7 @@ public class KitCommand extends BaseCommand {
     public void baseCommand(Player player, @Optional Kit kit) {
         if (kit != null) {
             if (cooldownManager.isOnCooldown(player.getUniqueId(), "kit-" + kit.getName())) {
-                player.sendMessage(ChatColor.RED + "That kit is on cooldown!"); // TODO: say how long it's on cd for
+                TextAdapter.sendComponent(player, noobaniaKits.getMessage("cooldown", "%kitname%", kit.getName())); // TODO: say how long it's on cd for
                 return;
             }
 
@@ -45,17 +45,17 @@ public class KitCommand extends BaseCommand {
             if (kit.getCooldown() > 0) {
                 cooldownManager.setUserCooldown(player.getUniqueId(), "kit-" + kit.getName(),
                         TimeUnit.SECONDS, kit.getCooldown(), (uuid, id) -> {
-                            player.sendMessage(ChatColor.GREEN + "Kit " + kit.getName() + " is no longer on cooldown!");
-                        });
+                            TextAdapter.sendComponent(player, noobaniaKits.getMessage("cooldown-end", "%kitname%", kit.getName()));
+                 });
             }
 
-            player.sendMessage(ChatColor.GREEN + "Used kit " + kit.getName() + ".");
+            TextAdapter.sendComponent(player, noobaniaKits.getMessage("used-kit", "%kitname%", kit.getName()));
 
             return;
         }
 
         TextComponent.Builder builder = TextComponent.builder()
-                .append(TextComponent.of("Kits: ").color(TextColor.GREEN));
+                .append(noobaniaKits.getMessage("kits"));
 
         Iterator<Kit> kitIterator = noobaniaKits.getKits().iterator();
         Kit entry;
@@ -69,7 +69,7 @@ public class KitCommand extends BaseCommand {
 
             builder = builder.append(TextComponent.of(entry.getName()).color(TextColor.GOLD)
                     .clickEvent(ClickEvent.runCommand("/kits:kit " + entry.getName()))
-                    .hoverEvent(HoverEvent.showText(TextComponent.of("Click to use kit " + entry.getName()))));
+                    .hoverEvent(HoverEvent.showText(noobaniaKits.getMessage("click-to-use", "%kitname%", kit.getName()))));
 
             if (kitIterator.hasNext()) {
                 builder = builder.append(TextComponent.of(", ").color(TextColor.GRAY));
@@ -84,7 +84,7 @@ public class KitCommand extends BaseCommand {
     public void reload(CommandSender sender) {
         noobaniaKits.reloadConfig();
         noobaniaKits.loadKits();
-        sender.sendMessage(ChatColor.GREEN + "Reloaded config and kits!");
+        sender.sendMessage(noobaniaKits.getLangEntry("reloaded"));
     }
 
 }

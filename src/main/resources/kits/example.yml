@@ -1,3 +1,4 @@
+# https://www.spigotmc.org/wiki/itemstack-serialization/
 example-kit:
   # The item that will be shown in the main /kitp menu
   shopitem:
@@ -11,7 +12,7 @@ example-kit:
 
   # Items in the kit, the key can be anything
   one:
-    slot: -1 # Any value lower than 0 means it has no slot preference
+    slot: -1 # Which slot the item overrides, -1 disables this
     item:
       ==: org.bukkit.inventory.ItemStack
       v: 2230
