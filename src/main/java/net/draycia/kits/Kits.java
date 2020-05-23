@@ -224,10 +224,6 @@ public final class Kits extends BossShopAddon {
         return ChatColor.translateAlternateColorCodes('&', language.getString(key, ""));
     }
 
-    public Component getMessage(String key) {
-        return MiniMessageParser.parseFormat(language.getString(key, ""));
-    }
-
     public Component getMessage(String key, String... replace) {
         return MiniMessageParser.parseFormat(language.getString(key, ""), replace);
     }
