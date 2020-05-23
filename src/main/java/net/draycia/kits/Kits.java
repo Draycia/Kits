@@ -77,6 +77,14 @@ public final class Kits extends BossShopAddon {
     @Override
     public void bossShopReloaded(CommandSender commandSender) { }
 
+    public void reloadLanguage() {
+        try {
+            language.load(new File(getDataFolder(), "language.yml"));
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setupListeners() {
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
     }

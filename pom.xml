@@ -46,6 +46,10 @@
                             <pattern>co.aikar.locales</pattern>
                             <shadedPattern>net.draycia.kits.locales</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>me.minidigger.minimessage</pattern>
+                            <shadedPattern>net.draycia.kits.minimessage</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>

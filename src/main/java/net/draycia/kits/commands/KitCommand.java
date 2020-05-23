@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.*;
 import net.draycia.cooldowns.CooldownManager;
 import net.draycia.kits.Kit;
 import net.draycia.kits.Kits;
+import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.event.ClickEvent;
@@ -35,7 +36,7 @@ public class KitCommand extends BaseCommand {
     public void baseCommand(Player player, @Optional Kit kit) {
         if (kit != null) {
             if (cooldownManager.isOnCooldown(player.getUniqueId(), "kit-" + kit.getName())) {
-                TextAdapter.sendComponent(player, noobaniaKits.getMessage("cooldown", "%kitname%", kit.getName())); // TODO: say how long it's on cd for
+                TextAdapter.sendComponent(player, noobaniaKits.getMessage("cooldown", "kitname", kit.getName())); // TODO: say how long it's on cd for
                 return;
             }
 
@@ -44,11 +45,11 @@ public class KitCommand extends BaseCommand {
             if (kit.getCooldown() > 0) {
                 cooldownManager.setUserCooldown(player.getUniqueId(), "kit-" + kit.getName(),
                         TimeUnit.SECONDS, kit.getCooldown(), (uuid, id) -> {
-                            TextAdapter.sendComponent(player, noobaniaKits.getMessage("cooldown-end", "%kitname%", kit.getName()));
+                            TextAdapter.sendComponent(player, noobaniaKits.getMessage("cooldown-end", "kitname", kit.getName()));
                  });
             }
 
-            TextAdapter.sendComponent(player, noobaniaKits.getMessage("used-kit", "%kitname%", kit.getName()));
+            TextAdapter.sendComponent(player, noobaniaKits.getMessage("used-kit", "kitname", kit.getName()));
 
             return;
         }
@@ -66,12 +67,10 @@ public class KitCommand extends BaseCommand {
                 continue;
             }
 
-            builder = builder.append(TextComponent.of(entry.getName()).color(TextColor.GOLD)
-                    .clickEvent(ClickEvent.runCommand("/kits:kit " + entry.getName()))
-                    .hoverEvent(HoverEvent.showText(noobaniaKits.getMessage("click-to-use", "%kitname%", kit.getName()))));
+            builder = builder.append(noobaniaKits.getMessage("click-to-use", "kitname", entry.getName()));
 
             if (kitIterator.hasNext()) {
-                builder = builder.append(TextComponent.of(", ").color(TextColor.GRAY));
+                builder = builder.append(noobaniaKits.getMessage("separator"));
             }
         }
 
@@ -82,6 +81,7 @@ public class KitCommand extends BaseCommand {
     @Subcommand("reload")
     public void reload(CommandSender sender) {
         noobaniaKits.reloadConfig();
+        noobaniaKits.reloadLanguage();
         noobaniaKits.loadKits();
         TextAdapter.sendComponent(sender, noobaniaKits.getMessage("reloaded"));
     }
